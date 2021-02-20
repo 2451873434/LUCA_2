@@ -10,7 +10,7 @@ contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_S
 i=-1;
 for c in contours:
     i=i+1
-    if hierarchy[0][i][2]!=-1:
+    if hierarchy[0][i][2]!=-1 & hierarchy[0][i][3]==-1:
         # 计算最小封闭圆形的中心和半径
         (x, y), radius = cv2.minEnclosingCircle(c)
         # 转换成整数
