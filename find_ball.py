@@ -1,24 +1,16 @@
 import cv2
 import numpy as np
-img=cv2.imread('D:/python/LUCA_2/football.jpg')
-
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-ret, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-
-contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-i=-1;
-for c in contours:
-    i=i+1
-    if hierarchy[0][i][2]!=-1 & hierarchy[0][i][3]==-1:
-        # 计算最小封闭圆形的中心和半径
-        (x, y), radius = cv2.minEnclosingCircle(c)
-        # 转换成整数
-        center = (int(x), int(y))
-        radius = int(radius)
-        # 画出圆形
-        img = cv2.circle(img, center, radius, (0, 255, 0), 1)
-cv2.drawContours(img, contours, -1, (0, 0, 0), 1)
-cv2.imshow("contours", img)
-cv2.waitKey()
-cv2.destroyAllWindows()
+import os
+paths='D:/python/LUCA_2/ball/'
+dirs=os.listdir(paths)
+for file in dirs:
+    img = cv2.imread(paths+file)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray, (3, 3), 0)  # 用高斯滤波处理原图像降噪
+    canny = cv2.Canny(blur, 100, 200)  # 50是最小阈值,150是最大阈值
+    circles = cv2.HoughCircles(canny, cv2.HOUGH_GRADIENT, 1, 500, param1=100, param2=50, minRadius=0, maxRadius=0)
+    circles = np.uint16(np.around(circles))
+    for i in circles[0, :]:  # 遍历矩阵每一行的数据
+        cv2.circle(img, (i[0], i[1]), i[2], (0, 255, 0), 2)
+        cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 2)
+    cv2.imwrite('D:/python/LUCA_2/ball_found/'+file, img)
